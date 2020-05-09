@@ -195,7 +195,13 @@ FOR employers@HQ.ACME.COM;
 SELECT *
 FROM HQ_EMP;
 
+-- see all users (schemas) from the database
+SELECT username AS SCHEMA_NAME
+FROM sys.dba_users
+ORDER BY username;
 
-
+-- changing user
+CONNECT scott
+ALTER SESSION SET CURRENT_SCHEMA = joe;
 
 
