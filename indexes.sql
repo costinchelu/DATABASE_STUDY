@@ -80,6 +80,7 @@ SELECT
 	hire_date
 FROM employees
 WHERE TO_CHAR( hire_date, 'YYYY' ) = '1987';
+
 --example when Oracle Server will use a function based index:
 CREATE INDEX emp_hire_year_idx
 ON employees (TO_CHAR( hire_date, 'YYYY' ));
