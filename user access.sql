@@ -41,8 +41,16 @@ Examples of some system privileges that the DBA will keep:
 			BACKUP ANY TABLE			
 */
 --for a new user: CHELUC_ID with a password stud:
+ALTER SESSION SET "_ORACLE_SCRIPT"=true;
+
 CREATE USER CHELUC_ID
 IDENTIFIED BY stud;
+
+-- to set current working schema
+ALTER SESSION SET CURRENT_SCHEMA = <schema name>
+
+-- to determine current schema
+SELECT sys_context( 'userenv', 'current_schema' ) FROM dual;
 
 --to change password:
 ALTER USER CHELUC_ID

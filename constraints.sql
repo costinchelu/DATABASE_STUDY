@@ -95,7 +95,7 @@ ADD CONSTRAINT emp_dep_fk
 ALTER TABLE employees
 MODIFY (email CONSTRAINT emp_email_nn NOT NULL);
 
---DROPping constraints is used by knowing constraint name:
+--DROPing constraints is used by knowing constraint name:
 ALTER TABLE departments 
 DROP CONSTRAINT dep_depid_pk CASCADE;
 --CASCADE is used because this PK has a link to a FK in
