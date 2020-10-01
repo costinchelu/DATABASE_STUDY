@@ -36,3 +36,7 @@ GRANT
 	ALL PRIVILEGES
 TO
 	smith;
+	
+	
+-- to drop a user (schema) - that has own objects:
+DROP USER smith CASCADE;
