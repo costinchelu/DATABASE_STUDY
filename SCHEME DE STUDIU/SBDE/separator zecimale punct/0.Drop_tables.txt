@@ -1,0 +1,10 @@
+drop table clienti cascade constraints;
+drop table clienti_standard cascade constraints;
+drop table conturi cascade constraints;
+drop table curs_schimb cascade constraints;
+drop table departamente cascade constraints;
+drop table localitati cascade constraints;
+drop table produse cascade constraints;
+drop table salariati cascade constraints;
+drop table tranzactii cascade constraints;
+drop table utilizatori cascade constraints;

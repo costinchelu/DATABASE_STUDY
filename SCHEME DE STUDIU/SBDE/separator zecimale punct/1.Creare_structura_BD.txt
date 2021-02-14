@@ -1,0 +1,194 @@
+-- ****************************
+--     TABELA LOCALITATI
+-- ****************************
+
+CREATE TABLE LOCALITATI(
+         COD_LOCALITATE NUMBER(6) PRIMARY KEY,
+         DENUMIRE_LOCALITATE VARCHAR2(30) NOT NULL,
+         JUDET VARCHAR2(30),
+         TARA VARCHAR2(30));
+
+
+-- ****************************
+--     TABELA CURS_SCHIMB
+-- ****************************
+
+
+CREATE TABLE  CURS_SCHIMB (
+         VALUTA VARCHAR2(3) NOT NULL,
+         DATA_CURS DATE NOT NULL,
+         CURS_BNR NUMBER(8,4) NOT NULL,
+         CURS_BANCA_CUMPARARE NUMBER(8,4) NOT NULL,
+         CURS_BANCA_VANZARE NUMBER(8,4) NOT NULL,
+	 CONSTRAINT curs_schimb_pk PRIMARY KEY (valuta, data_curs),
+	 CONSTRAINT check_valuta_curs CHECK (VALUTA IN ('RON','EUR','USD','GBP'))
+);
+
+-- ****************************
+--     TABELA CLIENTI
+-- ****************************
+
+CREATE TABLE CLIENTI (
+         ID_CLIENT NUMBER(10) NOT NULL PRIMARY KEY,
+         CNP VARCHAR2(13) NOT NULL,
+         DATA_NASTERII DATE NOT NULL,
+	 COD_LOC_NASTERE NUMBER(6),
+	 COD_LOC_DOMICILIU NUMBER(6),
+	 DOMICILIU VARCHAR2(50),
+         TELEFON VARCHAR2(20),
+         E_MAIL VARCHAR2(30),
+         ACT_IDENTITATE VARCHAR2(3) NOT NULL,
+         SERIE_ACT_IDENTITATE VARCHAR2(15) NOT NULL,
+         EMITENT_ACT_IDENTITATE VARCHAR2(30),
+         DATA_EMITERE_ACT_ID DATE,
+         DATA_EXPIRARII_ACT_ID DATE,
+         PROFESIE VARCHAR2(20),
+         OCUPATIE VARCHAR2(20),
+         DEN_ANGAJATOR VARCHAR2(30),
+         NIVEL_VENITURI NUMBER(7,2), 
+	 TIP_CLIENT VARCHAR2(15),
+	 STARE_CLIENT VARCHAR2(15),
+	 PRENUME VARCHAR2(50),
+	 NUME VARCHAR2(50),
+	 CONSTRAINT fk_loc_nastere FOREIGN KEY (COD_LOC_NASTERE) REFERENCES LOCALITATI (COD_LOCALITATE),
+	 CONSTRAINT fk_loc_domiciliu FOREIGN KEY (COD_LOC_DOMICILIU) REFERENCES LOCALITATI (COD_LOCALITATE),
+	 CONSTRAINT check_act_id_client CHECK (ACT_IDENTITATE IN ('CI', 'BI', 'PAS')),
+	 CONSTRAINT check_tip_client CHECK (TIP_CLIENT IN ('Standard', 'Gold', 'Platinum')), 
+	 CONSTRAINT check_stare_client CHECK (STARE_CLIENT IN ('Potential', 'Activ', 'Inactiv','Dormant'))
+);
+
+-- ****************************
+--     TABELA PRODUSE
+-- ****************************
+
+CREATE TABLE  PRODUSE (
+         ID_PRODUS NUMBER(5) NOT NULL PRIMARY KEY,
+         DESC_PRODUS VARCHAR2(30) NOT NULL,
+         TIP_PRODUS VARCHAR2(20) NOT NULL,
+         DATA_LANSARII DATE NOT NULL,
+         DATA_INCHIDERII_OFERTEI DATE,
+         LIMITA_MIN_PRODUS NUMBER(12,2),
+         LIMITA_MAX_PRODUS NUMBER(12,2),
+         PROCENT_DOBANDA NUMBER(4,2),
+         COMISION NUMBER(4,2),
+	 MATURITATE NUMBER(5,2),
+	 CONSTRAINT check_id_produs CHECK (ID_PRODUS BETWEEN 1000 AND 1999), 
+	 CONSTRAINT check_tip_produs CHECK (TIP_PRODUS IN ('cont curent','depozit','cont economii','credit', 'asigurare', 'produs investitii'))
+);
+
+-- ****************************
+--     TABELA CONTURI
+-- ****************************
+
+CREATE TABLE  CONTURI (
+         ID_CONT NUMBER(12) NOT NULL PRIMARY KEY,
+         ID_CLIENT NUMBER(10) NOT NULL,
+         ID_PRODUS NUMBER(5) NOT NULL,
+         CONT VARCHAR2(30) NOT NULL,
+         VALUTA VARCHAR2(3) NOT NULL ,
+         PLAFON NUMBER(12,2),
+         SOLD_INITIAL NUMBER(12,2) NOT NULL,
+         DATA_DESCHIDERE DATE NOT NULL,
+         DATA_INCHIDERE DATE,
+         STARE_CONT VARCHAR2(20) NOT NULL,
+	 CONSTRAINT fk_id_client FOREIGN KEY (ID_CLIENT) REFERENCES CLIENTI (ID_CLIENT),
+	 CONSTRAINT fk_id_produs FOREIGN KEY (ID_PRODUS) REFERENCES PRODUSE (ID_PRODUS),
+	 CONSTRAINT check_id_cont CHECK (ID_CONT BETWEEN 300000 AND 399999 OR ID_CONT=999999 OR ID_CONT=888888), 
+	 CONSTRAINT check_valuta CHECK (VALUTA IN ('RON','EUR','USD','GBP')), 
+	 CONSTRAINT check_stare_cont CHECK (STARE_CONT IN ('cont salariu','cont pensie','cont curent activ','credit activ','depozit activ','card activ','inchis'))
+);
+
+-- ****************************
+--     TABELA UTILIZATORI
+-- ****************************
+
+CREATE TABLE UTILIZATORI (
+         ID_USER NUMBER(4) NOT NULL PRIMARY KEY,
+         USER_NAME VARCHAR2(20) NOT NULL,
+         DATA_ACTIVARII DATE NOT NULL,
+         DATA_INACTIVARII DATE,
+	 ROL_USER VARCHAR2(20),
+         STARE_USER VARCHAR2(15) NOT NULL,
+	 CONSTRAINT check_id_user CHECK (ID_USER BETWEEN 2000 AND 6999 OR ID_USER=9999 OR ID_USER=8888), 
+	 CONSTRAINT check_rol_user CHECK (ROL_USER IN ('centrala','retea','internet banking','on-line')), 
+	 CONSTRAINT check_stare_user CHECK (STARE_USER IN ('activ','inactiv'))
+);
+
+-- ****************************
+--     TABELA DEPARTAMENTE
+-- ****************************
+
+CREATE TABLE  DEPARTAMENTE (
+         ID_DEPARTAMENT NUMBER(4) NOT NULL PRIMARY KEY,
+         DEN_DEPARTAMENT VARCHAR2(50) NOT NULL,
+         TIP_DEPARTAMENT VARCHAR2(20) NOT NULL,
+         ID_DEP_SUPERIOR NUMBER(4),
+         ID_MANAGER NUMBER(4),
+         COD_LOC_SEDIU NUMBER(6) NOT NULL,
+	 ADRESA VARCHAR2(50), 
+	 CONSTRAINT fk_loc_sediu FOREIGN KEY (COD_LOC_SEDIU) REFERENCES LOCALITATI (COD_LOCALITATE),
+	 CONSTRAINT check_tip_departament CHECK (TIP_DEPARTAMENT IN ('Management','Centrala','Retea Unitati'))
+);
+
+
+-- ****************************
+--     TABELA TRANZACTII
+-- ****************************
+
+CREATE TABLE  TRANZACTII (
+         ID_TRANZACTIE NUMBER(15) NOT NULL PRIMARY KEY,
+         TIP_TRANZACTIE VARCHAR2(30) NOT NULL,
+         ID_CONT_SURSA NUMBER(12),
+         ID_CONT_DESTINATIE NUMBER(12),
+         VALUTA VARCHAR2(3) NOT NULL,
+         SUMA NUMBER(12,2) NOT NULL,
+         DATA_TRANZACTIEI DATE NOT NULL,
+         CANAL_TRANZACTIE VARCHAR2(20) NOT NULL,
+         ID_USER NUMBER(4),
+	 ID_DEPARTAMENT NUMBER(4),
+	 CONSTRAINT check_id_tranzactie CHECK (ID_TRANZACTIE BETWEEN 500000 AND 4999999), 
+	 CONSTRAINT check_tip_trx CHECK (TIP_TRANZACTIE IN ('incasare salariu','incasare pensie','plata factura','schimb valutar','plata rata credit','rambursare card credit','constituire depozit','lichidare depozit', 'plata asigurare', 'plata la comerciant', 'retragere numerar', 'depunere numerar')),
+	 CONSTRAINT check_valuta_trx CHECK (VALUTA IN ('RON','EUR','USD','GBP')),
+	 CONSTRAINT check_canal_trx CHECK (CANAL_TRANZACTIE IN ('agentie','internet banking','on-line')),
+	 CONSTRAINT fk_cont_sursa_trx FOREIGN KEY (ID_CONT_SURSA) REFERENCES CONTURI (ID_CONT),
+	 CONSTRAINT fk_cont_destinatie_trx FOREIGN KEY (ID_CONT_DESTINATIE) REFERENCES CONTURI (ID_CONT),
+	 CONSTRAINT fk_id_user_trx FOREIGN KEY (ID_USER) REFERENCES UTILIZATORI (ID_USER),
+	 CONSTRAINT fk_id_dept_trx FOREIGN KEY (ID_DEPARTAMENT) REFERENCES DEPARTAMENTE (ID_DEPARTAMENT)
+);
+
+
+-- ****************************
+--     TABELA SALARIATI
+-- ****************************
+
+CREATE TABLE  SALARIATI (
+         MARCA_SALARIAT NUMBER(4) NOT NULL PRIMARY KEY,
+         CNP VARCHAR2(13) NOT NULL,
+         DATA_NASTERE DATE NOT NULL,
+         COD_LOC_NASTERE NUMBER(6) NOT NULL,
+         COD_LOC_DOMICILIU NUMBER(6) NOT NULL,
+         DOMICILIU VARCHAR2(50) NOT NULL,
+         TELEFON VARCHAR2(20),
+         E_MAIL VARCHAR2(30),
+         ACT_IDENTITATE VARCHAR2(3) NOT NULL,
+         SERIE_ACT_IDENTITATE VARCHAR2(15) NOT NULL,
+         EMITENT_ACT_IDENTITATE VARCHAR2(30) NOT NULL,
+         DATA_EMITERE_ACT_ID DATE NOT NULL,
+         DATA_EXPIRARII_ACT_ID DATE NOT NULL,
+         ID_USER NUMBER(4) NOT NULL,
+         ID_DEPARTAMENT NUMBER(4),
+         ID_MANAGER NUMBER(4),
+         FUNCTIE VARCHAR2(30) NOT NULL,
+         SALARIUL NUMBER(7,2) NOT NULL,
+         DATA_ANGAJARE DATE NOT NULL,
+	 STARE_SALARIAT VARCHAR2(15) NOT NULL,
+	 PRENUME VARCHAR2(50),
+	 NUME VARCHAR2(50),
+	 CONSTRAINT check_marca CHECK (MARCA_SALARIAT BETWEEN 5000 AND 9999),
+	 CONSTRAINT check_stare_salariat CHECK (STARE_SALARIAT IN ('Activ','Inactiv')),
+	 CONSTRAINT check_act_id_salariat CHECK (ACT_IDENTITATE IN ('CI', 'BI', 'PAS')),
+	 CONSTRAINT fk_loc_nastere_sal FOREIGN KEY (COD_LOC_NASTERE) REFERENCES LOCALITATI (COD_LOCALITATE),
+	 CONSTRAINT fk_loc_domiciliu_sal FOREIGN KEY (COD_LOC_DOMICILIU) REFERENCES LOCALITATI (COD_LOCALITATE),
+	 CONSTRAINT fk_id_user_sal FOREIGN KEY (ID_USER) REFERENCES UTILIZATORI (ID_USER),
+	 CONSTRAINT fk_id_dept_sal FOREIGN KEY (ID_DEPARTAMENT) REFERENCES DEPARTAMENTE (ID_DEPARTAMENT));
+
