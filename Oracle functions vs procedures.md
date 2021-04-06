@@ -1,4 +1,4 @@
-﻿# Oracle Programing: Functions vs Procedures
+# Oracle Programing: Functions vs Procedures
 
 Oracle Procedures and Functions can be thought of as subprograms where they can be created and saved within the database as database objects. 
 
