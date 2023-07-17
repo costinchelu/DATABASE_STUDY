@@ -1,0 +1,85 @@
+@startuml
+
+!define primary_key(x) <b><color:#b8861b><&key></color> x</b>
+!define foreign_key(x) <color:#aaaaaa><&key></color> x
+!define column(x) <color:#efefef><&media-record></color> x
+!define table(x) entity x << (T, white) >>
+
+top to bottom direction
+skinparam roundcorner 5
+skinparam linetype ortho
+skinparam shadowing false
+skinparam handwritten false
+
+skinparam DefaultFontName Courier
+
+' relations:
+' Zero or One	|o--
+' Exactly One	||--
+' Zero or Many	}o--
+' One or Many	}|--
+
+  entity "Users" as users {
+     primary_key( id ): user_id : INT
+    --
+    username : VARCHAR(50)
+    email : VARCHAR(100)
+  }
+  
+  entity "Addresses" as addresses {
+    primary_key( id ): address_id : INT
+    --
+    foreign_key( user_id ) [FK]
+    street : VARCHAR(100)
+    city: VARCHAR(50)
+    state: VARCHAR(50)
+    country: VARCHAR(50)
+  }
+  
+  entity "Orders" as orders {
+    primary_key( id ): order_id : INT
+    --
+    foreign_key( user_id ) [FK]
+    order_date : DATE
+    total_amount : DECIMAL(10, 2)
+  }
+
+  users ||--|{ addresses
+  users ||--{ orders
+
+  entity "OrderItems" as order_items {
+    primary_key( id ): order_item_id : INT
+    --
+    foreign_key( order_id ) [FK]
+    foreign_key( product_id ) [FK]
+    quantity : INT
+  }
+  
+  entity "Products" as products {
+    primary_key( id ): product_id : INT
+    --
+    name : VARCHAR(100)
+    price : DECIMAL(10, 2)
+  }
+  
+  orders ||--|{ order_items
+  products ||--|| order_items
+   
+  entity "Categories" as categories {
+    primary_key( id ): category_id : INT
+    --
+    name : VARCHAR(100)
+  }
+  
+  ' join table
+  entity "ProductCategories" as product_categories {
+    primary_key( id ): product_category_id : INT
+    --
+    foreign_key( product_id ) [FK]
+    foreign_key( category_id ) [FK]
+  }
+  
+  products ||--|{ product_categories
+  categories ||--|{ product_categories
+
+@enduml
